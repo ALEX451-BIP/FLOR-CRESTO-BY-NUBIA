@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>FLOR CRESTO BY NUBIA · Salón de Belleza</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- FullCalendar -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/es.min.js'></script>
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <!-- Firebase SDK (modular) -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js",
+                "firebase/firestore": "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js",
+                "firebase/analytics": "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js"
+            }
+        }
+    </script>
+    <style>
+        /* ============================================ */
+        /* VARIABLES Y CONFIGURACIÓN BASE - ROSA/NEGRO */
+        /* ============================================ */
+        :root {
+            --primary-black: #0d0d0d;
+            --secondary-black: #1a1a1a;
+            --pink: #ff3b9b;
+            --light-pink: #ff99cc;
+            --dark-pink: #b8005e;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e9ecef;
+            --dark-gray: #6c757d;
+            --success: #28a745;
+            --success-hover: #218838;
+            --danger: #dc3545;
+            --danger-hover: #c82333;
+            --warning: #ffc107;
+            --warning-hover: #e0a800;
+            --info: #17a2b8;
+            --info-hover: #138496;
+            --shadow-light: 0 2px 12px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.12);
+            --shadow-heavy: 0 8px 30px rgba(0, 0, 0, 0.15);
+            --border-radius-sm: 6px;
+            --border-radius-md: 10px;
+            --border-radius-lg: 16px;
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+            color: var(--primary-black);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+        
+        /* ============================================ */
+        /* HEADER Y NAVEGACIÓN - RESPONSIVE */
+        /* ============================================ */
+        header {
+            background: linear-gradient(135deg, var(--primary-black) 0%, var(--secondary-black) 100%);
+            color: var(--white);
+            padding: 1rem 0;
+            box-shadow: var(--shadow-medium);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .logo-img {
+            height: 50px;
+            width: auto;
+            filter: drop-shadow(0 0 10px var(--light-pink));
+            border-radius: 10px;
+            background: rgba(255, 59, 155, 0.1);
+            padding: 5px;
+            object-fit: contain;
+        }
+        
+        .logo span {
+            color: var(--pink);
+            background: linear-gradient(45deg, var(--pink), var(--light-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.5rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        
+        /* Menú hamburguesa */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1001;
+        }
+        
+        nav {
+            transition: right 0.3s ease;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition-fast);
+        }
+        
+        nav a:hover {
+            color: var(--light-pink);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Overlay para menú móvil */
+        .nav-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        
+        /* ============================================ */
+        /* HERO */
+        /* ============================================ */
+        .hero {
+            background: linear-gradient(rgba(13,13,13,0.85), rgba(26,26,26,0.9)), 
+                        url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80') no-repeat center center/cover;
+            color: var(--white);
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero-logo {
+            max-width: 80%;
+            height: auto;
+            margin-bottom: 2rem;
+            filter: drop-shadow(0 0 20px var(--pink));
+            border: 3px solid var(--pink);
+            border-radius: 30px;
+            padding: 10px;
+            background: rgba(255,59,155,0.1);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: var(--light-pink);
+        }
+        
+        /* ============================================ */
+        /* BOTONES */
+        /* ============================================ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--pink) 0%, var(--dark-pink) 100%);
+            color: var(--primary-black);
+            padding: 0.8rem 1.8rem;
+            border-radius: var(--border-radius-md);
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow-light);
+            transition: var(--transition-normal);
+            font-size: 1rem;
+            width: auto;
+            min-width: 200px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+            background: linear-gradient(135deg, var(--light-pink) 0%, var(--pink) 100%);
+        }
+        
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            min-width: auto;
+        }
+        
+        .btn-block {
+            width: 100%;
+        }
+        
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+        }
+        
+        /* ============================================ */
+        /* SERVICIOS - RESPONSIVE */
+        /* ============================================ */
+        .services {
+            padding: 4rem 0;
+            background-color: var(--white);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.2rem;
+            color: var(--primary-black);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: var(--pink);
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .service-card {
+            background: var(--white);
+            border-radius: var(--border-radius-md);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border: 1px solid var(--medium-gray);
+            box-shadow: var(--shadow-light);
+            transition: var(--transition-normal);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--pink);
+        }
+        
+        .service-icon {
+            font-size: 2.5rem;
+            color: var(--pink);
+            margin-bottom: 1rem;
+        }
+        
+        .service-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .service-card .duracion {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--dark-pink);
+            background: var(--light-pink);
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            border-radius: 50px;
+        }
+        
+        /* ============================================ */
+        /* MODALES - RESPONSIVE */
+        /* ============================================ */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        
+        .modal-content {
+            background: var(--white);
+            border-radius: var(--border-radius-lg);
+            width: 100%;
+            max-width: 600px;
+            padding: 2rem 1.5rem;
+            position: relative;
+            box-shadow: var(--shadow-heavy);
+            border: 1px solid var(--medium-gray);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--dark-gray);
+            transition: var(--transition-fast);
+        }
+        
+        .modal-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--primary-black);
+        }
+        
+        /* ============================================ */
+        /* FORMULARIOS - RESPONSIVE */
+        /* ============================================ */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            color: var(--secondary-black);
+            font-size: 0.95rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            transition: var(--transition-fast);
+        }
+        
+        /* ============================================ */
+        /* PANEL ADMIN - RESPONSIVE */
+        /* ============================================ */
+        .admin-panel {
+            display: none;
+            padding: 2rem 0;
+            background: linear-gradient(135deg, var(--light-gray) 0%, var(--white) 100%);
+            min-height: 100vh;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--medium-gray);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .admin-title {
+            font-size: 1.8rem;
+            color: var(--primary-black);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .admin-actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+        
+        /* Estadísticas responsivas */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .stat-card {
+            background: var(--light-gray);
+            padding: 1.2rem 1rem;
+            border-radius: var(--border-radius-md);
+            text-align: center;
+            border-left: 4px solid var(--pink);
+        }
+        
+        .stat-card p {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary-black);
+        }
+        
+        /* Horarios responsivos */
+        .day-hours-container {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .day-card {
+            background: var(--light-gray);
+            border-radius: var(--border-radius-md);
+            padding: 1.2rem;
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .turno-config {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        @media (max-width: 600px) {
+            .turno-config {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .turno {
+            background: var(--white);
+            padding: 1rem;
+            border-radius: var(--border-radius-sm);
+            border-left: 4px solid var(--pink);
+        }
+        
+        /* CALENDARIO - RESPONSIVE */
+        .calendar-section {
+            background: var(--white);
+            border-radius: var(--border-radius-lg);
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--medium-gray);
+            overflow-x: auto;
+        }
+        
+        #calendar {
+            min-height: 500px;
+            height: 60vh;
+            width: 100%;
+        }
+        
+        .fc .fc-toolbar {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .fc .fc-toolbar-title {
+            font-size: 1.2rem;
+        }
+        
+        .fc .fc-button {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+        
+        /* Lista de turnos responsiva */
+        .turno-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .turno-info {
+            width: 100%;
+        }
+        
+        .turno-acciones {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+        
+        /* ============================================ */
+        /* FOOTER */
+        /* ============================================ */
+        footer {
+            background: linear-gradient(135deg, var(--primary-black) 0%, var(--secondary-black) 100%);
+            color: var(--white);
+            padding: 3rem 0 2rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-column h3 {
+            color: var(--pink);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        /* ============================================ */
+        /* MEDIA QUERIES PRINCIPALES */
+        /* ============================================ */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            nav {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                max-width: 300px;
+                height: 100vh;
+                background: linear-gradient(135deg, var(--primary-black) 0%, #34495e 100%);
+                padding: 80px 20px 20px;
+                transition: right 0.3s ease;
+                z-index: 1000;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+            }
+            
+            nav.active {
+                right: 0;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            nav a {
+                padding: 12px;
+                border-radius: var(--border-radius-sm);
+                margin-bottom: 5px;
+                justify-content: flex-start;
+            }
+            
+            .nav-overlay.active {
+                display: block;
+            }
+            
+            .logo span {
+                font-size: 1.2rem;
+            }
+            
+            .hero h2 {
+                font-size: 1.8rem;
+            }
+            
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+            
+            .admin-title {
+                font-size: 1.5rem;
+            }
+            
+            .admin-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .modal-content {
+                padding: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .btn {
+                min-width: 100%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .social-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <img src="download.jpg" alt="FLOR CRESTO BY NUBIA" class="logo-img site-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <span>FLOR CRESTO BY NUBIA</span>
+            </div>
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="nav-overlay" id="navOverlay"></div>
+            <nav id="mainNav">
+                <ul>
+                    <li><a href="#inicio"><i class="fas fa-home"></i> Inicio</a></li>
+                    <li><a href="#servicios"><i class="fas fa-cut"></i> Servicios</a></li>
+                    <li><a href="#" id="adminLink"><i class="fas fa-cog"></i> Administración</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section id="inicio" class="hero">
+        <div class="container hero-content">
+            <img src="download.jpg" alt="FLOR CRESTO BY NUBIA" class="hero-logo site-logo">
+            <p>🌸 Tiempo de belleza con estilo y precisión 🌸</p>
+            <button class="btn" id="abrirModalReserva"><i class="fas fa-calendar-check"></i> RESERVAR TURNO</button>
+        </div>
+    </section>
+
+    <!-- SERVICIOS -->
+    <section id="servicios" class="services">
+        <div class="container">
+            <div class="section-title">
+                <h2>Nuestros Servicios</h2>
+                <p>Duración estimada de cada servicio</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card"><i class="fas fa-paint-brush service-icon"></i><h3>TINTURA DE RAÍCES</h3><p>Hasta 2 cm</p><div class="duracion">1:20 hs</div></div>
+                <div class="service-card"><i class="fas fa-cut service-icon"></i><h3>RAÍCES + NUTRI + CORTE</h3><div class="duracion">1:50 hs</div></div>
+                <div class="service-card"><i class="fas fa-paint-roller service-icon"></i><h3>BABYLIGHTS / BALAYAGE</h3><div class="duracion">4 a 6 hs</div></div>
+                <div class="service-card"><i class="fas fa-wind service-icon"></i><h3>CORTE + NUTRI + BRUSHING</h3><div class="duracion">1:30 hs</div></div>
+                <div class="service-card"><i class="fas fa-fill-drip service-icon"></i><h3>TINTURA COMPLETA + BRUSHING + NUTRICIÓN</h3><div class="duracion">2:00 hs</div></div>
+                <div class="service-card"><i class="fas fa-straighten service-icon"></i><h3>ALISADO</h3><div class="duracion">2 a 2:30 hs</div></div>
+                <div class="service-card"><i class="fas fa-spa service-icon"></i><h3>TRATAMIENTO (BOTOX / KERATINA)</h3><div class="duracion">1:30 a 2 hs</div></div>
+                <div class="service-card"><i class="fas fa-crown service-icon"></i><h3>PEINADO DE FIESTA</h3><div class="duracion">1 a 1:30 hs</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODAL LOGIN ADMIN -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="cerrarLoginModal">&times;</span>
+            <h3 class="modal-title">🔐 Acceso Administrador</h3>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" class="form-control" id="password" placeholder="Ingresa la contraseña" required>
+                </div>
+                <button type="submit" class="btn btn-block">Ingresar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL RESERVA PÚBLICA (con validaciones) -->
+    <div id="reservaModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="cerrarModalReserva">&times;</span>
+            <h3 class="modal-title">🌸 Reserva tu turno</h3>
+            <form id="reservaForm">
+                <div class="form-group">
+                    <label for="nombre">Nombre completo</label>
+                    <input type="text" class="form-control" id="nombre" placeholder="Ej: María González" required>
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Teléfono (con código de área)</label>
+                    <input type="tel" class="form-control" id="telefono" placeholder="Ej: 5491122334455" required>
+                </div>
+                <div class="form-group">
+                    <label for="servicio">Servicio</label>
+                    <select class="form-control" id="servicio" required>
+                        <option value="">Selecciona un servicio</option>
+                        <option value="Tintura de raíces (1:20h)">Tintura de raíces (1:20h)</option>
+                        <option value="Raíces + nutri + corte (1:50h)">Raíces + nutri + corte (1:50h)</option>
+                        <option value="Babylights/Balayage (4-6h)">Babylights/Balayage (4-6h)</option>
+                        <option value="Corte + nutri + brushing (1:30h)">Corte + nutri + brushing (1:30h)</option>
+                        <option value="Tintura completa + brushing + nutrición (2h)">Tintura completa + brushing + nutrición (2h)</option>
+                        <option value="Alisado (2-2:30h)">Alisado (2-2:30h)</option>
+                        <option value="Tratamiento botox/keratina (1:30-2h)">Tratamiento botox/keratina (1:30-2h)</option>
+                        <option value="Peinado de fiesta (1-1:30h)">Peinado de fiesta (1-1:30h)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="fecha">Fecha</label>
+                    <input type="text" class="form-control" id="fecha" placeholder="Selecciona una fecha" required>
+                </div>
+                <div class="form-group">
+                    <label for="hora">Hora</label>
+                    <input type="time" class="form-control" id="hora" required>
+                </div>
+                <button type="submit" class="btn btn-block">Confirmar reserva</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL RESERVA ADMIN (sin restricciones) -->
+    <div id="adminReservaModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="cerrarAdminReservaModal">&times;</span>
+            <h3 class="modal-title">👑 Agregar turno (Administradora)</h3>
+            <p style="color: var(--dark-pink); margin-bottom: 1rem;"><i class="fas fa-unlock-alt"></i> Modo libre: puedes agregar turnos en cualquier momento, incluso múltiples en el mismo horario.</p>
+            <form id="adminReservaForm">
+                <div class="form-group">
+                    <label for="adminNombre">Nombre completo</label>
+                    <input type="text" class="form-control" id="adminNombre" placeholder="Ej: María González" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminTelefono">Teléfono (con código de área)</label>
+                    <input type="tel" class="form-control" id="adminTelefono" placeholder="Ej: 5491122334455" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminServicio">Servicio</label>
+                    <select class="form-control" id="adminServicio" required>
+                        <option value="">Selecciona un servicio</option>
+                        <option value="Tintura de raíces (1:20h)">Tintura de raíces (1:20h)</option>
+                        <option value="Raíces + nutri + corte (1:50h)">Raíces + nutri + corte (1:50h)</option>
+                        <option value="Babylights/Balayage (4-6h)">Babylights/Balayage (4-6h)</option>
+                        <option value="Corte + nutri + brushing (1:30h)">Corte + nutri + brushing (1:30h)</option>
+                        <option value="Tintura completa + brushing + nutrición (2h)">Tintura completa + brushing + nutrición (2h)</option>
+                        <option value="Alisado (2-2:30h)">Alisado (2-2:30h)</option>
+                        <option value="Tratamiento botox/keratina (1:30-2h)">Tratamiento botox/keratina (1:30-2h)</option>
+                        <option value="Peinado de fiesta (1-1:30h)">Peinado de fiesta (1-1:30h)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="adminFecha">Fecha</label>
+                    <input type="text" class="form-control" id="adminFecha" placeholder="Selecciona una fecha" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminHora">Hora</label>
+                    <input type="time" class="form-control" id="adminHora" required>
+                </div>
+                <button type="submit" class="btn btn-block">Agregar turno</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL INFO CLIENTE -->
+    <div id="clientInfoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="cerrarInfoModal">&times;</span>
+            <h3 class="modal-title">📋 Detalles del turno</h3>
+            <div id="clientInfoContent"></div>
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-small btn-whatsapp" id="whatsappBtn"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                <button class="btn btn-small btn-success" id="completarTurnoInfo">✔ Completar</button>
+                <button class="btn btn-small btn-danger" id="cancelarTurnoInfo">✖ Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL ADMIN -->
+    <div id="adminPanel" class="admin-panel">
+        <div class="container">
+            <div class="admin-header">
+                <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                    <img src="download.jpg" alt="FLOR CRESTO BY NUBIA" class="site-logo" style="height: 50px; border: 2px solid var(--pink); border-radius: 10px; padding: 5px;">
+                    <h2 class="admin-title"><i class="fas fa-cog"></i> Panel de Administración</h2>
+                </div>
+                <div class="admin-actions">
+                    <button class="btn btn-success" id="agregarTurnoAdminBtn"><i class="fas fa-plus-circle"></i> Agregar turno manual</button>
+                    <button class="btn btn-secondary" id="cerrarAdmin"><i class="fas fa-times"></i> Cerrar panel</button>
+                </div>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="stats-grid">
+                <div class="stat-card"><h4>Turnos Hoy</h4><p id="hoyCount">0</p></div>
+                <div class="stat-card"><h4>Esta Semana</h4><p id="semanaCount">0</p></div>
+                <div class="stat-card"><h4>Completados</h4><p id="completadosCount">0</p></div>
+                <div class="stat-card"><h4>Cancelados</h4><p id="canceladosCount">0</p></div>
+            </div>
+
+            <!-- CALENDARIO -->
+            <div class="calendar-section">
+                <h3><i class="fas fa-calendar-alt"></i> Calendario de turnos (haz clic en una celda para agregar turno como administradora)</h3>
+                <div id="calendar"></div>
+            </div>
+
+            <!-- Horarios con turnos mañana y tarde -->
+            <div class="business-hours-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                    <h3><i class="fas fa-clock"></i> Horarios de atención</h3>
+                    <button class="btn btn-small" id="guardarHorarios"><i class="fas fa-save"></i> Guardar</button>
+                </div>
+                <div class="day-hours-container" id="horariosContainer"></div>
+            </div>
+
+            <!-- Personalizar logo -->
+            <div class="business-hours-section">
+                <h3><i class="fas fa-image"></i> Personalizar logo</h3>
+                <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                    <img id="logoPreview" src="download.jpg" alt="Vista previa" style="height: 80px; border: 2px solid var(--pink); border-radius: 10px; padding: 5px;">
+                    <div>
+                        <input type="file" id="logoUpload" accept="image/*">
+                        <p style="font-size: 0.9rem;">Selecciona una nueva imagen para el logo</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de turnos -->
+            <div class="turnos-lista">
+                <h3><i class="fas fa-list"></i> Turnos reservados</h3>
+                <div id="turnosContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>FLOR CRESTO BY NUBIA</h3>
+                    <p>Belleza y estilo con la mejor calidad.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Contacto</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> Av. de las Flores 234</li>
+                        <li><i class="fas fa-phone"></i> 11 5678-1234</li>
+                        <li><i class="fas fa-envelope"></i> info@florcrestobynubia.com</li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Horarios</h3>
+                    <ul>
+                        <li><i class="fas fa-clock"></i> Lunes a Viernes: 9:00 - 13:00 y 14:00 - 20:00</li>
+                        <li><i class="fas fa-clock"></i> Sábados: 10:00 - 18:00</li>
+                        <li><i class="fas fa-clock"></i> Domingos: Cerrado</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2026 FLOR CRESTO BY NUBIA</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        // ============================================
+        // IMPORTAR FIREBASE (usando import maps)
+        // ============================================
+        import { initializeApp } from "firebase/app";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, setDoc, getDoc } from "firebase/firestore";
+        import { getAnalytics } from "firebase/analytics";
+
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCK9sCxdUghKKg-VvJz3JXg21xPy-4j7PA",
+            authDomain: "florcrestobynubia-9d11c.firebaseapp.com",
+            databaseURL: "https://florcrestobynubia-9d11c-default-rtdb.firebaseio.com",
+            projectId: "florcrestobynubia-9d11c",
+            storageBucket: "florcrestobynubia-9d11c.firebasestorage.app",
+            messagingSenderId: "986427781087",
+            appId: "1:986427781087:web:51518a98367a195f8c9e6a",
+            measurementId: "G-ZPKD9H1FXP"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const analytics = getAnalytics(app);
+
+        // ============================================
+        // VARIABLES GLOBALES Y FUNCIONES DE LA APP
+        // ============================================
+        (function() {
+            const ADMIN_PASSWORD = "1234";
+            let isAdmin = false;
+            let turnos = [];
+            let horarios = {};
+
+            // Elementos DOM
+            const adminPanel = document.getElementById('adminPanel');
+            const adminLink = document.getElementById('adminLink');
+            const loginModal = document.getElementById('loginModal');
+            const cerrarLoginModal = document.getElementById('cerrarLoginModal');
+            const loginForm = document.getElementById('loginForm');
+            const passwordInput = document.getElementById('password');
+            const abrirModalReserva = document.getElementById('abrirModalReserva');
+            const reservaModal = document.getElementById('reservaModal');
+            const cerrarModalReserva = document.getElementById('cerrarModalReserva');
+            const reservaForm = document.getElementById('reservaForm');
+            const turnosContainer = document.getElementById('turnosContainer');
+            const horariosContainer = document.getElementById('horariosContainer');
+            const guardarHorariosBtn = document.getElementById('guardarHorarios');
+            const clientInfoModal = document.getElementById('clientInfoModal');
+            const cerrarInfoModal = document.getElementById('cerrarInfoModal');
+            const clientInfoContent = document.getElementById('clientInfoContent');
+            const completarTurnoInfo = document.getElementById('completarTurnoInfo');
+            const cancelarTurnoInfo = document.getElementById('cancelarTurnoInfo');
+            const whatsappBtn = document.getElementById('whatsappBtn');
+            const adminReservaModal = document.getElementById('adminReservaModal');
+            const cerrarAdminReservaModal = document.getElementById('cerrarAdminReservaModal');
+            const adminReservaForm = document.getElementById('adminReservaForm');
+            const agregarTurnoAdminBtn = document.getElementById('agregarTurnoAdminBtn');
+            const fechaInput = document.getElementById('fecha');
+            const adminFechaInput = document.getElementById('adminFecha');
+            const adminHoraInput = document.getElementById('adminHora');
+
+            // Elementos del menú responsive
+            const menuToggle = document.getElementById('menuToggle');
+            const mainNav = document.getElementById('mainNav');
+            const navOverlay = document.getElementById('navOverlay');
+
+            let calendar = null;
+            let currentEventId = null;
+            let currentTelefono = '';
+
+            // Logo (localStorage)
+            let logoSrc = localStorage.getItem('logoSrc') || 'download.jpg';
+            function actualizarLogoEnPagina(src) {
+                document.querySelectorAll('.site-logo').forEach(img => img.src = src);
+                const preview = document.getElementById('logoPreview');
+                if (preview) preview.src = src;
+            }
+            actualizarLogoEnPagina(logoSrc);
+
+            document.getElementById('logoUpload')?.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const dataURL = event.target.result;
+                        localStorage.setItem('logoSrc', dataURL);
+                        actualizarLogoEnPagina(dataURL);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Flatpickr
+            if (fechaInput) {
+                flatpickr(fechaInput, {
+                    locale: 'es',
+                    dateFormat: 'Y-m-d',
+                    minDate: 'today',
+                    maxDate: new Date().fp_incr(90)
+                });
+            }
+            if (adminFechaInput) {
+                flatpickr(adminFechaInput, {
+                    locale: 'es',
+                    dateFormat: 'Y-m-d',
+                    minDate: 'today',
+                    maxDate: new Date().fp_incr(90)
+                });
+            }
+
+            // ============================================
+            // FUNCIONES DE FIRESTORE
+            // ============================================
+            async function cargarHorarios() {
+                try {
+                    const docRef = doc(db, 'config', 'horarios');
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        horarios = docSnap.data();
+                    } else {
+                        horarios = {
+                            lunes: { activo: true, manana: { activo: true, apertura: '09:00', cierre: '13:00' }, tarde: { activo: true, apertura: '14:00', cierre: '20:00' } },
+                            martes: { activo: true, manana: { activo: true, apertura: '09:00', cierre: '13:00' }, tarde: { activo: true, apertura: '14:00', cierre: '20:00' } },
+                            miércoles: { activo: true, manana: { activo: true, apertura: '09:00', cierre: '13:00' }, tarde: { activo: true, apertura: '14:00', cierre: '20:00' } },
+                            jueves: { activo: true, manana: { activo: true, apertura: '09:00', cierre: '13:00' }, tarde: { activo: true, apertura: '14:00', cierre: '20:00' } },
+                            viernes: { activo: true, manana: { activo: true, apertura: '09:00', cierre: '13:00' }, tarde: { activo: true, apertura: '14:00', cierre: '20:00' } },
+                            sábado: { activo: true, manana: { activo: true, apertura: '10:00', cierre: '14:00' }, tarde: { activo: true, apertura: '15:00', cierre: '18:00' } },
+                            domingo: { activo: false, manana: { activo: false, apertura: '00:00', cierre: '00:00' }, tarde: { activo: false, apertura: '00:00', cierre: '00:00' } }
+                        };
+                        await setDoc(docRef, horarios);
+                    }
+                } catch (error) {
+                    console.error("Error cargando horarios:", error);
+                }
+                renderizarHorarios();
+            }
+
+            async function guardarHorariosEnFirestore() {
+                try {
+                    await setDoc(doc(db, 'config', 'horarios'), horarios);
+                    alert('Horarios guardados correctamente');
+                } catch (error) {
+                    console.error("Error guardando horarios:", error);
+                    alert('Error al guardar horarios');
+                }
+            }
+
+            function escucharTurnos() {
+                const q = query(collection(db, 'turnos'), orderBy('fecha', 'desc'));
+                onSnapshot(q, (snapshot) => {
+                    turnos = [];
+                    snapshot.forEach((doc) => {
+                        turnos.push({ id: doc.id, ...doc.data() });
+                    });
+                    actualizarPanel();
+                    if (calendar) refreshCalendarEvents();
+                }, (error) => {
+                    console.error("Error escuchando turnos:", error);
+                });
+            }
+
+            // ============================================
+            // FUNCIONES DE VALIDACIÓN
+            // ============================================
+            function esDiaLaborable(fecha) {
+                const dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+                const dia = dias[new Date(fecha).getDay()];
+                return horarios[dia] && horarios[dia].activo;
+            }
+
+            function horarioDentroDeAtencion(fecha, hora) {
+                const dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+                const dia = dias[new Date(fecha).getDay()];
+                const config = horarios[dia];
+                if (!config || !config.activo) return false;
+                if (config.manana && config.manana.activo && hora >= config.manana.apertura && hora <= config.manana.cierre) return true;
+                if (config.tarde && config.tarde.activo && hora >= config.tarde.apertura && hora <= config.tarde.cierre) return true;
+                return false;
+            }
+
+            function turnoNoSolapado(fecha, hora, duracionMinutos = 60, idExcluir = null) {
+                const inicio = new Date(`${fecha}T${hora}`);
+                const fin = new Date(inicio.getTime() + duracionMinutos * 60000);
+                return !turnos.some(t => {
+                    if (t.id === idExcluir) return false;
+                    if (t.estado === 'cancelado') return false;
+                    const tInicio = new Date(`${t.fecha}T${t.hora}`);
+                    const tFin = new Date(tInicio.getTime() + 60 * 60000);
+                    return (inicio < tFin && fin > tInicio);
+                });
+            }
+
+            // ============================================
+            // ACTUALIZAR PANEL Y LISTA
+            // ============================================
+            function actualizarPanel() {
+                const hoy = new Date().toISOString().split('T')[0];
+                const turnosHoy = turnos.filter(t => t.fecha === hoy).length;
+
+                const hoyDate = new Date();
+                const diaSemana = hoyDate.getDay();
+                const inicioSemana = new Date(hoyDate);
+                inicioSemana.setDate(hoyDate.getDate() - (diaSemana === 0 ? 6 : diaSemana - 1));
+                const finSemana = new Date(inicioSemana);
+                finSemana.setDate(inicioSemana.getDate() + 6);
+
+                const turnosSemana = turnos.filter(t => {
+                    const tDate = new Date(t.fecha);
+                    return tDate >= inicioSemana && tDate <= finSemana;
+                }).length;
+
+                const completados = turnos.filter(t => t.estado === 'completado').length;
+                const cancelados = turnos.filter(t => t.estado === 'cancelado').length;
+
+                document.getElementById('hoyCount').textContent = turnosHoy;
+                document.getElementById('semanaCount').textContent = turnosSemana;
+                document.getElementById('completadosCount').textContent = completados;
+                document.getElementById('canceladosCount').textContent = cancelados;
+
+                if (turnos.length === 0) {
+                    turnosContainer.innerHTML = '<p style="text-align:center; color:#aaa;">No hay turnos reservados</p>';
+                } else {
+                    const turnosOrdenados = [...turnos].sort((a, b) => new Date(b.fecha + 'T' + b.hora) - new Date(a.fecha + 'T' + a.hora));
+                    let html = '';
+                    turnosOrdenados.forEach(t => {
+                        let estadoClass = 'estado-pendiente';
+                        if (t.estado === 'completado') estadoClass = 'estado-completado';
+                        if (t.estado === 'cancelado') estadoClass = 'estado-cancelado';
+
+                        html += `
+                            <div class="turno-item" data-id="${t.id}">
+                                <div class="turno-info">
+                                    <span><strong>${t.nombre}</strong></span>
+                                    <span>${t.servicio}</span>
+                                    <span>${t.fecha} ${t.hora}</span>
+                                    <span class="turno-estado ${estadoClass}">${t.estado}</span>
+                                </div>
+                                <div class="turno-acciones">
+                                    <button class="completar-btn" data-id="${t.id}">✔ Completar</button>
+                                    <button class="cancelar-btn" data-id="${t.id}">✖ Cancelar</button>
+                                    <button class="eliminar-btn" data-id="${t.id}">🗑 Eliminar</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    turnosContainer.innerHTML = html;
+
+                    document.querySelectorAll('.completar-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const id = e.target.dataset.id;
+                            updateDoc(doc(db, 'turnos', id), { estado: 'completado' });
+                        });
+                    });
+                    document.querySelectorAll('.cancelar-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const id = e.target.dataset.id;
+                            updateDoc(doc(db, 'turnos', id), { estado: 'cancelado' });
+                        });
+                    });
+                    document.querySelectorAll('.eliminar-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const id = e.target.dataset.id;
+                            deleteDoc(doc(db, 'turnos', id));
+                        });
+                    });
+                }
+            }
+
+            // ============================================
+            // HORARIOS (renderizar)
+            // ============================================
+            function renderizarHorarios() {
+                const dias = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+                let html = '';
+                dias.forEach(dia => {
+                    const h = horarios[dia] || {};
+                    const manana = h.manana || { activo: false, apertura: '09:00', cierre: '13:00' };
+                    const tarde = h.tarde || { activo: false, apertura: '14:00', cierre: '20:00' };
+                    html += `
+                        <div class="day-card" data-dia="${dia}">
+                            <div class="day-header">
+                                <h4>${dia.charAt(0).toUpperCase() + dia.slice(1)}</h4>
+                                <div class="day-checkbox">
+                                    <input type="checkbox" class="dia-activo" ${h.activo ? 'checked' : ''} data-dia="${dia}">
+                                    <label>Día laborable</label>
+                                </div>
+                            </div>
+                            <div class="turno-config">
+                                <div class="turno">
+                                    <h5><i class="fas fa-sun"></i> Mañana</h5>
+                                    <div class="form-group">
+                                        <label>Activo</label>
+                                        <input type="checkbox" class="manana-activo" ${manana.activo ? 'checked' : ''} data-dia="${dia}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Apertura</label>
+                                        <input type="time" class="form-control manana-apertura" value="${manana.apertura}" data-dia="${dia}" ${!manana.activo ? 'disabled' : ''}>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Cierre</label>
+                                        <input type="time" class="form-control manana-cierre" value="${manana.cierre}" data-dia="${dia}" ${!manana.activo ? 'disabled' : ''}>
+                                    </div>
+                                </div>
+                                <div class="turno">
+                                    <h5><i class="fas fa-moon"></i> Tarde</h5>
+                                    <div class="form-group">
+                                        <label>Activo</label>
+                                        <input type="checkbox" class="tarde-activo" ${tarde.activo ? 'checked' : ''} data-dia="${dia}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Apertura</label>
+                                        <input type="time" class="form-control tarde-apertura" value="${tarde.apertura}" data-dia="${dia}" ${!tarde.activo ? 'disabled' : ''}>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Cierre</label>
+                                        <input type="time" class="form-control tarde-cierre" value="${tarde.cierre}" data-dia="${dia}" ${!tarde.activo ? 'disabled' : ''}>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                horariosContainer.innerHTML = html;
+
+                document.querySelectorAll('.manana-activo').forEach(chk => {
+                    chk.addEventListener('change', function() {
+                        const dia = this.dataset.dia;
+                        const apertura = document.querySelector(`.manana-apertura[data-dia="${dia}"]`);
+                        const cierre = document.querySelector(`.manana-cierre[data-dia="${dia}"]`);
+                        apertura.disabled = !this.checked;
+                        cierre.disabled = !this.checked;
+                    });
+                });
+                document.querySelectorAll('.tarde-activo').forEach(chk => {
+                    chk.addEventListener('change', function() {
+                        const dia = this.dataset.dia;
+                        const apertura = document.querySelector(`.tarde-apertura[data-dia="${dia}"]`);
+                        const cierre = document.querySelector(`.tarde-cierre[data-dia="${dia}"]`);
+                        apertura.disabled = !this.checked;
+                        cierre.disabled = !this.checked;
+                    });
+                });
+            }
+
+            guardarHorariosBtn?.addEventListener('click', () => {
+                const dias = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+                dias.forEach(dia => {
+                    const diaActivo = document.querySelector(`.dia-activo[data-dia="${dia}"]`)?.checked || false;
+                    const mananaActivo = document.querySelector(`.manana-activo[data-dia="${dia}"]`)?.checked || false;
+                    const mananaApertura = document.querySelector(`.manana-apertura[data-dia="${dia}"]`)?.value || '09:00';
+                    const mananaCierre = document.querySelector(`.manana-cierre[data-dia="${dia}"]`)?.value || '13:00';
+                    const tardeActivo = document.querySelector(`.tarde-activo[data-dia="${dia}"]`)?.checked || false;
+                    const tardeApertura = document.querySelector(`.tarde-apertura[data-dia="${dia}"]`)?.value || '14:00';
+                    const tardeCierre = document.querySelector(`.tarde-cierre[data-dia="${dia}"]`)?.value || '20:00';
+
+                    horarios[dia] = {
+                        activo: diaActivo,
+                        manana: { activo: mananaActivo, apertura: mananaApertura, cierre: mananaCierre },
+                        tarde: { activo: tardeActivo, apertura: tardeApertura, cierre: tardeCierre }
+                    };
+                });
+                guardarHorariosEnFirestore();
+            });
+
+            // ============================================
+            // CALENDARIO
+            // ============================================
+            function initCalendar() {
+                if (calendar) calendar.destroy();
+                const calendarEl = document.getElementById('calendar');
+                if (!calendarEl) return;
+
+                calendar = new FullCalendar.Calendar(calendarEl, {
+                    locale: 'es',
+                    initialView: window.innerWidth < 768 ? 'timeGridDay' : 'dayGridMonth',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: window.innerWidth < 768 ? 'dayGridMonth,timeGridDay' : 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    editable: true,
+                    eventDurationEditable: true,
+                    selectable: true,
+                    select: function(info) {
+                        if (!isAdmin) return;
+                        let fecha = info.startStr.split('T')[0];
+                        let hora = info.startStr.includes('T') ? info.startStr.split('T')[1].substring(0,5) : '09:00';
+                        adminFechaInput.value = fecha;
+                        adminHoraInput.value = hora;
+                        adminReservaModal.style.display = 'flex';
+                    },
+                    eventDrop: function(info) {
+                        if (!isAdmin) {
+                            info.revert();
+                            alert('Solo la administradora puede mover turnos');
+                            return;
+                        }
+                        const event = info.event;
+                        const id = event.id;
+                        const nuevaFecha = event.start.toISOString().split('T')[0];
+                        const nuevaHora = event.start.toTimeString().split(' ')[0].substring(0,5);
+                        updateDoc(doc(db, 'turnos', id), { fecha: nuevaFecha, hora: nuevaHora });
+                    },
+                    events: function(fetchInfo, successCallback, failureCallback) {
+                        const eventos = turnos.map(t => {
+                            let className = 'fc-event-pendiente';
+                            if (t.estado === 'completado') className = 'fc-event-completado';
+                            if (t.estado === 'cancelado') className = 'fc-event-cancelado';
+                            const startStr = t.fecha + 'T' + t.hora + ':00';
+                            const end = new Date(new Date(startStr).getTime() + 60 * 60 * 1000);
+                            return {
+                                id: t.id,
+                                title: `${t.nombre} - ${t.servicio}`,
+                                start: startStr,
+                                end: end.toISOString(),
+                                className: className,
+                                extendedProps: {
+                                    nombre: t.nombre,
+                                    telefono: t.telefono || '',
+                                    servicio: t.servicio,
+                                    estado: t.estado,
+                                    fecha: t.fecha,
+                                    hora: t.hora
+                                }
+                            };
+                        });
+                        successCallback(eventos);
+                    },
+                    eventClick: function(info) {
+                        currentEventId = info.event.id;
+                        currentTelefono = info.event.extendedProps.telefono;
+                        const props = info.event.extendedProps;
+                        clientInfoContent.innerHTML = `
+                            <p><strong>Cliente:</strong> ${props.nombre}</p>
+                            <p><strong>Teléfono:</strong> ${props.telefono || 'No registrado'}</p>
+                            <p><strong>Servicio:</strong> ${props.servicio}</p>
+                            <p><strong>Fecha:</strong> ${props.fecha}</p>
+                            <p><strong>Hora:</strong> ${props.hora}</p>
+                            <p><strong>Estado:</strong> ${props.estado}</p>
+                        `;
+                        clientInfoModal.style.display = 'flex';
+                    }
+                });
+                calendar.render();
+            }
+
+            function refreshCalendarEvents() {
+                if (calendar) calendar.refetchEvents();
+            }
+
+            // ============================================
+            // MENÚ RESPONSIVE
+            // ============================================
+            function toggleMenu() {
+                mainNav.classList.toggle('active');
+                navOverlay.classList.toggle('active');
+                menuToggle.innerHTML = mainNav.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+                document.body.style.overflow = mainNav.classList.contains('active') ? 'hidden' : '';
+            }
+
+            menuToggle.addEventListener('click', toggleMenu);
+            navOverlay.addEventListener('click', toggleMenu);
+
+            // Cerrar menú al hacer clic en un enlace
+            document.querySelectorAll('nav a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (mainNav.classList.contains('active')) toggleMenu();
+                });
+            });
+
+            // ============================================
+            // LOGIN Y ACCESO ADMIN
+            // ============================================
+            adminLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginModal.style.display = 'flex';
+            });
+
+            cerrarLoginModal.addEventListener('click', () => {
+                loginModal.style.display = 'none';
+            });
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const pwd = passwordInput.value.trim();
+                if (pwd === ADMIN_PASSWORD) {
+                    isAdmin = true;
+                    loginModal.style.display = 'none';
+                    adminPanel.style.display = 'block';
+                    document.querySelector('header').style.display = 'none';
+                    document.querySelector('.hero').style.display = 'none';
+                    document.querySelector('.services').style.display = 'none';
+                    document.querySelector('footer').style.display = 'none';
+                    actualizarPanel();
+                    renderizarHorarios();
+                    if (!calendar) initCalendar();
+                    else refreshCalendarEvents();
+                } else {
+                    alert('Contraseña incorrecta');
+                }
+                passwordInput.value = '';
+            });
+
+            cerrarAdmin.addEventListener('click', () => {
+                isAdmin = false;
+                adminPanel.style.display = 'none';
+                document.querySelector('header').style.display = 'block';
+                document.querySelector('.hero').style.display = 'block';
+                document.querySelector('.services').style.display = 'block';
+                document.querySelector('footer').style.display = 'block';
+            });
+
+            window.addEventListener('click', (e) => {
+                if (e.target === loginModal) loginModal.style.display = 'none';
+                if (e.target === reservaModal) reservaModal.style.display = 'none';
+                if (e.target === clientInfoModal) clientInfoModal.style.display = 'none';
+                if (e.target === adminReservaModal) adminReservaModal.style.display = 'none';
+            });
+
+            // ============================================
+            // RESERVA PÚBLICA
+            // ============================================
+            abrirModalReserva.addEventListener('click', () => {
+                reservaModal.style.display = 'flex';
+            });
+
+            cerrarModalReserva.addEventListener('click', () => {
+                reservaModal.style.display = 'none';
+            });
+
+            reservaForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const nombre = document.getElementById('nombre').value.trim();
+                const telefono = document.getElementById('telefono').value.trim();
+                const servicio = document.getElementById('servicio').value;
+                const fecha = document.getElementById('fecha').value;
+                const hora = document.getElementById('hora').value;
+
+                if (!nombre || !telefono || !servicio || !fecha || !hora) {
+                    alert('Por favor completa todos los campos');
+                    return;
+                }
+
+                if (!esDiaLaborable(fecha)) {
+                    alert('❌ El día seleccionado no es laborable. Consulta los horarios de atención.');
+                    return;
+                }
+                if (!horarioDentroDeAtencion(fecha, hora)) {
+                    alert('❌ La hora seleccionada está fuera del horario de atención (mañana o tarde).');
+                    return;
+                }
+                if (!turnoNoSolapado(fecha, hora, 60)) {
+                    alert('❌ Ya existe un turno en ese horario. Por favor elige otra hora.');
+                    return;
+                }
+
+                const nuevoTurno = {
+                    nombre,
+                    telefono,
+                    servicio,
+                    fecha,
+                    hora,
+                    estado: 'pendiente',
+                    createdAt: new Date().toISOString()
+                };
+
+                try {
+                    await addDoc(collection(db, 'turnos'), nuevoTurno);
+                    reservaModal.style.display = 'none';
+                    reservaForm.reset();
+                    alert('✅ Turno reservado con éxito');
+                } catch (error) {
+                    console.error("Error agregando turno:", error);
+                    alert('Error al guardar el turno');
+                }
+            });
+
+            // ============================================
+            // RESERVA ADMIN (sin restricciones)
+            // ============================================
+            agregarTurnoAdminBtn.addEventListener('click', () => {
+                adminReservaForm.reset();
+                const hoy = new Date().toISOString().split('T')[0];
+                adminFechaInput.value = hoy;
+                adminReservaModal.style.display = 'flex';
+            });
+
+            cerrarAdminReservaModal.addEventListener('click', () => {
+                adminReservaModal.style.display = 'none';
+            });
+
+            adminReservaForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const nombre = document.getElementById('adminNombre').value.trim();
+                const telefono = document.getElementById('adminTelefono').value.trim();
+                const servicio = document.getElementById('adminServicio').value;
+                const fecha = document.getElementById('adminFecha').value;
+                const hora = document.getElementById('adminHora').value;
+
+                if (!nombre || !telefono || !servicio || !fecha || !hora) {
+                    alert('Por favor completa todos los campos');
+                    return;
+                }
+
+                const nuevoTurno = {
+                    nombre,
+                    telefono,
+                    servicio,
+                    fecha,
+                    hora,
+                    estado: 'pendiente',
+                    createdAt: new Date().toISOString()
+                };
+
+                try {
+                    await addDoc(collection(db, 'turnos'), nuevoTurno);
+                    adminReservaModal.style.display = 'none';
+                    adminReservaForm.reset();
+                    alert('✅ Turno agregado por administradora (sin restricciones)');
+                } catch (error) {
+                    console.error("Error agregando turno:", error);
+                    alert('Error al guardar el turno');
+                }
+            });
+
+            // ============================================
+            // MODAL INFO CLIENTE
+            // ============================================
+            cerrarInfoModal.addEventListener('click', () => {
+                clientInfoModal.style.display = 'none';
+            });
+
+            completarTurnoInfo.addEventListener('click', () => {
+                if (currentEventId) {
+                    updateDoc(doc(db, 'turnos', currentEventId), { estado: 'completado' });
+                    clientInfoModal.style.display = 'none';
+                }
+            });
+
+            cancelarTurnoInfo.addEventListener('click', () => {
+                if (currentEventId) {
+                    updateDoc(doc(db, 'turnos', currentEventId), { estado: 'cancelado' });
+                    clientInfoModal.style.display = 'none';
+                }
+            });
+
+            whatsappBtn.addEventListener('click', () => {
+                if (currentTelefono) {
+                    let numero = currentTelefono.replace(/\D/g, '');
+                    if (numero) {
+                        window.open(`https://wa.me/${numero}`, '_blank');
+                    } else {
+                        alert('Número de teléfono no válido');
+                    }
+                } else {
+                    alert('No hay número de teléfono registrado para este cliente');
+                }
+            });
+
+            // ============================================
+            // INICIALIZAR
+            // ============================================
+            async function init() {
+                await cargarHorarios();
+                escucharTurnos();
+            }
+
+            init();
+        })();
+    </script>
+</body>
+</html>
